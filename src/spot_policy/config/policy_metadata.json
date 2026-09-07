@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
-  "task_id": "Mjlab-Velocity-Rough-Spot",
-  "checkpoint": "/home/alaa-radhwan/Projects/anymal_c_velocity/logs/rsl_rl/spot_velocity/2026-07-19_23-17-47_spot_rough_v1.2.3_finetune/model_4750.pt",
+  "schema_version": 2,
+  "task_id": "Mjlab-Velocity-Flat-Spot-V3",
+  "checkpoint": "/home/alaa-radhwan/Projects/spot_locomotion_v2/logs/rsl_rl/spot_velocity_v3/2026-09-07_15-57-38_v3_baseline_kp300_kd40_tl45_115/model_550.pt",
   "policy_frequency_hz": 50.0,
   "physics_timestep_s": 0.002,
   "control_decimation": 10,
-  "observation_size": 235,
+  "observation_size": 48,
   "action_size": 12,
   "joint_order": [
     "fl_hx",
@@ -23,30 +23,30 @@
   ],
   "default_joint_positions": [
     0.0,
-    1.0399999618530273,
-    -1.7999999523162842,
+    1.04,
+    -1.8,
     0.0,
-    1.0399999618530273,
-    -1.7999999523162842,
+    1.04,
+    -1.8,
     0.0,
-    1.0399999618530273,
-    -1.7999999523162842,
+    1.04,
+    -1.8,
     0.0,
-    1.0399999618530273,
-    -1.7999999523162842
+    1.04,
+    -1.8
   ],
   "action_scales": [
-    0.30000001192092896,
-    0.4000000059604645,
+    0.3,
+    0.4,
     0.5,
-    0.30000001192092896,
-    0.4000000059604645,
+    0.3,
+    0.4,
     0.5,
-    0.30000001192092896,
-    0.4000000059604645,
+    0.3,
+    0.4,
     0.5,
-    0.30000001192092896,
-    0.4000000059604645,
+    0.3,
+    0.4,
     0.5
   ],
   "observation_order": [
@@ -105,14 +105,6 @@
       ],
       "start": 45,
       "end": 48
-    },
-    {
-      "name": "height_scan",
-      "shape": [
-        187
-      ],
-      "start": 48,
-      "end": 235
     }
   ],
   "command_order": [
@@ -124,5 +116,13 @@
     "m/s",
     "m/s",
     "rad/s"
-  ]
+  ],
+  "deployment_notes": {
+    "gazebo_physics_hz": 2000,
+    "ros2_control_hz": 2000,
+    "low_level_kp": 300.0,
+    "low_level_kd": 40.0,
+    "hip_effort_limit_nm": 45.0,
+    "knee_effort_limit_nm": 115.0
+  }
 }
