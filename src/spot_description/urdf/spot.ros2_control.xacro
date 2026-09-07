@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro
+    name="spot_control_joint"
+    params="joint_name initial_position effort_min effort_max"
+  >
+    <joint name="${joint_name}">
+
+      <command_interface name="effort">
+        <param name="min">${effort_min}</param>
+        <param name="max">${effort_max}</param>
+      </command_interface>
+
+      <state_interface name="position">
+        <param name="initial_value">${initial_position}</param>
+      </state_interface>
+
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+
+    </joint>
+  </xacro:macro>
+
+
+  <xacro:macro
+    name="spot_ros2_control"
+    params="controllers_file"
+  >
+
+    <ros2_control
+      name="GazeboSimSystem"
+      type="system"
+    >
+      <hardware>
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </hardware>
+
+      <!-- Front-left -->
+      <xacro:spot_control_joint
+        joint_name="fl_hx"
+        initial_position="0.0"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="fl_hy"
+        initial_position="1.04"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="fl_kn"
+        initial_position="-1.80"
+        effort_min="-115.0"
+        effort_max="115.0"
+      />
+
+      <!-- Front-right -->
+      <xacro:spot_control_joint
+        joint_name="fr_hx"
+        initial_position="0.0"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="fr_hy"
+        initial_position="1.04"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="fr_kn"
+        initial_position="-1.80"
+        effort_min="-115.0"
+        effort_max="115.0"
+      />
+
+      <!-- Hind-left -->
+      <xacro:spot_control_joint
+        joint_name="hl_hx"
+        initial_position="0.0"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="hl_hy"
+        initial_position="1.04"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="hl_kn"
+        initial_position="-1.80"
+        effort_min="-115.0"
+        effort_max="115.0"
+      />
+
+      <!-- Hind-right -->
+      <xacro:spot_control_joint
+        joint_name="hr_hx"
+        initial_position="0.0"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="hr_hy"
+        initial_position="1.04"
+        effort_min="-45.0"
+        effort_max="45.0"
+      />
+
+      <xacro:spot_control_joint
+        joint_name="hr_kn"
+        initial_position="-1.80"
+        effort_min="-115.0"
+        effort_max="115.0"
+      />
+
+    </ros2_control>
+
+
+    <gazebo>
+      <plugin
+          filename="libgz_ros2_control-system.so"
+          name="gz_ros2_control::GazeboSimROS2ControlPlugin"
+      >
+          <parameters>${controllers_file}</parameters>
+          <hold_joints>false</hold_joints>
+          <controller_manager_name>controller_manager</controller_manager_name>
+      </plugin>
+
+      <plugin
+        filename="gz-sim-odometry-publisher-system"
+        name="gz::sim::systems::OdometryPublisher"
+      >
+        <odom_frame>odom</odom_frame>
+        <robot_base_frame>base_link</robot_base_frame>
+        <odom_publish_frequency>50</odom_publish_frequency>
+        <odom_topic>/model/spot/odometry</odom_topic>
+        <dimensions>3</dimensions>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

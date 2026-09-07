@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<robot name="spot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    Spot V3 Gazebo model.
+
+    Mechanical inertials are ported from the approved V3 MuJoCo plant:
+      total articulated mass = 31.5999994 kg
+      body = 16.707651 kg
+      each hip = 1.1368834 kg
+      each upper leg = 2.2562037 kg
+      each lower leg = 0.33 kg
+
+    The inertial origin RPY values below are the URDF equivalents of the
+    MuJoCo principal-axis quaternions. Geometry, kinematics, joint ordering,
+    home pose, and collision approximations remain aligned with the V3 MJCF.
+  -->
+
+  <xacro:arg
+    name="use_gazebo"
+    default="false"
+  />
+
+  <xacro:arg
+    name="controllers_file"
+    default=""
+  />
+
+  <xacro:include
+    filename="$(find spot_description)/urdf/spot.ros2_control.xacro"
+  />
+
+  <xacro:property
+    name="mesh_path"
+    value="package://spot_description/meshes"
+  />
+
+  <material name="black_abs">
+    <color rgba="0.1 0.1 0.1 1"/>
+  </material>
+
+  <material name="wrap_yellow">
+    <color rgba="0.878431 0.666666 0.227450 1"/>
+  </material>
+
+  <xacro:macro
+    name="spot_leg"
+    params="prefix hip_xyz upper_y hip_mesh upper_mesh_0 upper_mesh_1 lower_mesh upper_collision_mesh hip_inertial_xyz hip_inertial_rpy upper_inertial_xyz upper_inertial_rpy hy_upper knee_upper">
+
+    <!-- Hip link -->
+    <link name="${prefix}_hip">
+      <inertial>
+        <!-- Isaac-derived V3 principal inertia frame. -->
+        <origin
+          xyz="${hip_inertial_xyz}"
+          rpy="${hip_inertial_rpy}"
+        />
+        <mass value="1.1368834"/>
+        <inertia
+          ixx="0.001149959"
+          ixy="0"
+          ixz="0"
+          iyy="0.0016612653"
+          iyz="0"
+          izz="0.0017290359"
+        />
+      </inertial>
+
+      <visual>
+        <geometry>
+          <mesh filename="${mesh_path}/${hip_mesh}"/>
+        </geometry>
+        <material name="black_abs"/>
+      </visual>
+    </link>
+
+    <!-- Hip-X joint -->
+    <joint name="${prefix}_hx" type="revolute">
+      <parent link="body"/>
+      <child link="${prefix}_hip"/>
+
+      <origin xyz="${hip_xyz}" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+
+      <limit
+        lower="-0.785398"
+        upper="0.785398"
+        effort="45"
+        velocity="30"
+      />
+
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+    <!-- Upper-leg link -->
+    <link name="${prefix}_uleg">
+      <inertial>
+        <!-- Isaac-derived V3 principal inertia frame. -->
+        <origin
+          xyz="${upper_inertial_xyz}"
+          rpy="${upper_inertial_rpy}"
+        />
+        <mass value="2.2562037"/>
+        <inertia
+          ixx="0.026939424"
+          ixy="0"
+          ixz="0"
+          iyy="0.026025372"
+          iyz="0"
+          izz="0.0029866563"
+        />
+      </inertial>
+
+      <visual>
+        <geometry>
+          <mesh filename="${mesh_path}/${upper_mesh_0}"/>
+        </geometry>
+        <material name="wrap_yellow"/>
+      </visual>
+
+      <visual>
+        <geometry>
+          <mesh filename="${mesh_path}/${upper_mesh_1}"/>
+        </geometry>
+        <material name="black_abs"/>
+      </visual>
+
+      <collision>
+        <geometry>
+          <mesh
+            filename="${mesh_path}/${upper_collision_mesh}"
+          />
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Hip-Y joint -->
+    <joint name="${prefix}_hy" type="revolute">
+      <parent link="${prefix}_hip"/>
+      <child link="${prefix}_uleg"/>
+
+      <origin xyz="0 ${upper_y} 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+
+      <limit
+        lower="-0.898845"
+        upper="${hy_upper}"
+        effort="45"
+        velocity="30"
+      />
+
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+    <!-- Lower-leg link -->
+    <link name="${prefix}_lleg">
+      <inertial>
+        <!-- Isaac-derived V3 principal inertia frame. -->
+        <origin
+          xyz="0.0059736 0 -0.17466427"
+          rpy="0 -0.009608225154 0"
+        />
+        <mass value="0.33"/>
+        <inertia
+          ixx="0.0070141945"
+          ixy="0"
+          ixz="0"
+          iyy="0.00709946"
+          iyz="0"
+          izz="0.00014465585"
+        />
+      </inertial>
+
+      <visual>
+        <geometry>
+          <mesh filename="${mesh_path}/${lower_mesh}"/>
+        </geometry>
+        <material name="black_abs"/>
+      </visual>
+
+      <!--
+        Approximation of the MuJoCo lower-leg capsule.
+
+        The MuJoCo capsule runs from:
+          z = -0.0200
+        to:
+          z = -0.3125
+
+        The URDF cylinder therefore has:
+          length = 0.2925
+          center = -0.16625
+      -->
+      <collision name="${prefix}_lower_leg_collision">
+        <origin xyz="0 0 -0.16625" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.025" length="0.2925"/>
+        </geometry>
+      </collision>
+
+      <!-- Foot sphere -->
+      <collision name="${prefix}_foot_collision">
+        <origin xyz="0 0 -0.3365" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.036"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Knee joint -->
+    <joint name="${prefix}_kn" type="revolute">
+      <parent link="${prefix}_uleg"/>
+      <child link="${prefix}_lleg"/>
+
+      <origin xyz="0.025 0 -0.32" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+
+      <limit
+        lower="-2.7929"
+        upper="${knee_upper}"
+        effort="115"
+        velocity="30"
+      />
+
+      <dynamics damping="0" friction="0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <!--
+    A massless root link gives ROS a conventional fixed frame and avoids
+    making the inertial body the root of the kinematic tree.
+  -->
+  <link name="base_link"/>
+
+  <!-- Main body -->
+  <link name="body">
+    <inertial>
+      <!-- Exact V3 values from the Isaac-derived MuJoCo plant. -->
+      <origin
+        xyz="0 0 -0.00496172"
+        rpy="0 0 0"
+      />
+      <mass value="16.707651"/>
+      <inertia
+        ixx="0.08154379"
+        ixy="0"
+        ixz="0"
+        iyy="0.5492312"
+        iyz="0"
+        izz="0.5694544"
+      />
+    </inertial>
+
+    <visual>
+      <geometry>
+        <mesh filename="${mesh_path}/body_0.obj"/>
+      </geometry>
+      <material name="black_abs"/>
+    </visual>
+
+    <visual>
+      <geometry>
+        <mesh filename="${mesh_path}/body_1.obj"/>
+      </geometry>
+      <material name="wrap_yellow"/>
+    </visual>
+
+    <collision name="body_collision">
+      <geometry>
+        <mesh filename="${mesh_path}/body_collision.obj"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_to_body" type="fixed">
+    <parent link="base_link"/>
+    <child link="body"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU frame -->
+  <link name="imu_link"/>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="body"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Front-left leg -->
+  <xacro:spot_leg
+    prefix="fl"
+    hip_xyz="0.29785 0.055 0"
+    upper_y="0.1108"
+    hip_mesh="front_left_hip.obj"
+    upper_mesh_0="front_left_upper_leg_0.obj"
+    upper_mesh_1="front_left_upper_leg_1.obj"
+    lower_mesh="front_left_lower_leg.obj"
+    upper_collision_mesh="left_upper_leg_collision.obj"
+    hip_inertial_xyz="-0.01586739 0.00855842 0.00000903"
+    hip_inertial_rpy="0.009080681816 0.000371666895 0.383826707174"
+    upper_inertial_xyz="0.00214442 -0.01110184 -0.07881204"
+    upper_inertial_rpy="0.091386232480 -0.019292145715 -0.043426383458"
+    hy_upper="2.29511"
+    knee_upper="-0.254402"
+  />
+
+  <!-- Front-right leg -->
+  <xacro:spot_leg
+    prefix="fr"
+    hip_xyz="0.29785 -0.055 0"
+    upper_y="-0.1108"
+    hip_mesh="front_right_hip.obj"
+    upper_mesh_0="front_right_upper_leg_0.obj"
+    upper_mesh_1="front_right_upper_leg_1.obj"
+    lower_mesh="front_right_lower_leg.obj"
+    upper_collision_mesh="right_upper_leg_collision.obj"
+    hip_inertial_xyz="-0.01586739 -0.00855842 0.00000903"
+    hip_inertial_rpy="-0.009080681816 0.000371666895 -0.383826707174"
+    upper_inertial_xyz="0.00214442 0.01110184 -0.07881204"
+    upper_inertial_rpy="-0.091386232480 -0.019292145715 0.043426383458"
+    hy_upper="2.24363"
+    knee_upper="-0.255648"
+  />
+
+  <!-- Hind-left leg -->
+  <xacro:spot_leg
+    prefix="hl"
+    hip_xyz="-0.29785 0.055 0"
+    upper_y="0.1108"
+    hip_mesh="rear_left_hip.obj"
+    upper_mesh_0="rear_left_upper_leg_0.obj"
+    upper_mesh_1="rear_left_upper_leg_1.obj"
+    lower_mesh="rear_left_lower_leg.obj"
+    upper_collision_mesh="left_upper_leg_collision.obj"
+    hip_inertial_xyz="0.01586739 0.00855842 0.00000903"
+    hip_inertial_rpy="0.009080681816 -0.000371666895 -0.383826707174"
+    upper_inertial_xyz="0.00214442 -0.01110184 -0.07881204"
+    upper_inertial_rpy="0.091386232480 -0.019292145715 -0.043426383458"
+    hy_upper="2.29511"
+    knee_upper="-0.247067"
+  />
+
+  <!-- Hind-right leg -->
+  <xacro:spot_leg
+    prefix="hr"
+    hip_xyz="-0.29785 -0.055 0"
+    upper_y="-0.1108"
+    hip_mesh="rear_right_hip.obj"
+    upper_mesh_0="rear_right_upper_leg_0.obj"
+    upper_mesh_1="rear_right_upper_leg_1.obj"
+    lower_mesh="rear_right_lower_leg.obj"
+    upper_collision_mesh="right_upper_leg_collision.obj"
+    hip_inertial_xyz="0.01586739 -0.00855842 0.00000903"
+    hip_inertial_rpy="-0.009080681816 -0.000371666895 0.383826707174"
+    upper_inertial_xyz="0.00214442 0.01110184 -0.07881204"
+    upper_inertial_rpy="-0.091386232480 -0.019292145715 0.043426383458"
+    hy_upper="2.29511"
+    knee_upper="-0.248282"
+  />
+
+  <xacro:if value="$(arg use_gazebo)">
+    <xacro:spot_ros2_control
+      controllers_file="$(arg controllers_file)"
+    />
+  </xacro:if>
+</robot>

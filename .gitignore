@@ -1,0 +1,32 @@
+# ROS 2 / colcon generated directories
+build/
+install/
+log/
+
+# Local backups
+backup_pre_v3/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE / editor
+.vscode/
+.idea/
+*~
+*.swp
+
+*.zip
+
+# ROS bags / recordings
+*.bag
+*.db3
+*.mcap
+
+# Misc
+.DS_Store
