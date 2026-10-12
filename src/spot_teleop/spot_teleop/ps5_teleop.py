@@ -6,6 +6,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 
+import time
 
 class SpotPs5Teleop(Node):
 
@@ -26,6 +27,9 @@ class SpotPs5Teleop(Node):
         self.deadzone = 0.08
 
         self.latest_joy = None
+
+        self.latest_joy_time = None
+        self.joy_timeout = 0.25
 
         self.publisher = self.create_publisher(
             Twist,
@@ -58,11 +62,16 @@ class SpotPs5Teleop(Node):
 
     def joy_callback(self, msg):
         self.latest_joy = msg
+        self.latest_joy_time = time.monotonic()
 
     def publish_command(self):
         cmd = Twist()
 
-        if self.latest_joy is None:
+        if self.latest_joy is None or self.latest_joy_time is None:
+            self.publisher.publish(cmd)
+            return
+
+        if time.monotonic() - self.latest_joy_time > self.joy_timeout:
             self.publisher.publish(cmd)
             return
 

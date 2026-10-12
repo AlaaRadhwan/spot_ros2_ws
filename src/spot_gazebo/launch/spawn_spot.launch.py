@@ -14,6 +14,17 @@ from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import (
     PythonLaunchDescriptionSource,
 )
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    RegisterEventHandler,
+)
+
+from launch.substitutions import (
+    LaunchConfiguration,
+    PathJoinSubstitution,
+    PythonExpression,
+)
 from launch_ros.actions import Node
 import xacro
 
@@ -37,10 +48,20 @@ def generate_launch_description() -> LaunchDescription:
         / "spot.urdf.xacro"
     )
 
-    world_file = (
-        gazebo_share
-        / "worlds"
-        / "flat_world.sdf"
+    world = LaunchConfiguration("world")
+    spawn_x = LaunchConfiguration("spawn_x")
+    spawn_y = LaunchConfiguration("spawn_y")
+    spawn_z = LaunchConfiguration("spawn_z")
+    spawn_yaw = LaunchConfiguration("spawn_yaw")
+
+    world_file = PathJoinSubstitution(
+        [
+            str(gazebo_share),
+            "worlds",
+            PythonExpression(
+                ["'", world, "_world.sdf'"]
+            ),
+        ]
     )
 
     controllers_file = (
@@ -59,6 +80,8 @@ def generate_launch_description() -> LaunchDescription:
         },
     ).toxml()
 
+
+
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             str(
@@ -68,7 +91,7 @@ def generate_launch_description() -> LaunchDescription:
             )
         ),
         launch_arguments={
-            "gz_args": f"-v 3 {world_file}",
+            "gz_args": ["-r -v 3 ", world_file],
         }.items(),
     )
 
@@ -96,11 +119,13 @@ def generate_launch_description() -> LaunchDescription:
             "-name",
             "spot",
             "-x",
-            "0.0",
+            spawn_x,
             "-y",
-            "0.0",
+            spawn_y,
             "-z",
-            "0.46",
+            spawn_z,
+            "-Y",
+            spawn_yaw,
         ],
     )
 
@@ -171,8 +196,60 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
+    scan_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="spot_scan_bridge",
+        output="screen",
+        arguments=[
+            "/scan"
+            "@sensor_msgs/msg/LaserScan"
+            "[gz.msgs.LaserScan",
+        ],
+    )
+
+    odom_tf_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="spot_odom_tf_bridge",
+        output="screen",
+        arguments=[
+            "/model/spot/pose"
+            "@tf2_msgs/msg/TFMessage"
+            "[gz.msgs.Pose_V",
+        ],
+        remappings=[
+            (
+                "/model/spot/pose",
+                "/tf",
+            ),
+        ],
+    )
+
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "world",
+                default_value="flat",
+                choices=["flat", "warehouse"],
+            ),
+            DeclareLaunchArgument(
+                "spawn_x",
+                default_value="0.0",
+            ),
+            DeclareLaunchArgument(
+                "spawn_y",
+                default_value="0.0",
+            ),
+            DeclareLaunchArgument(
+                "spawn_z",
+                default_value="0.46",
+            ),
+            DeclareLaunchArgument(
+                "spawn_yaw",
+                default_value="0.0",
+            ),
+
             gazebo,
             robot_state_publisher,
             spawn_spot,
@@ -180,5 +257,8 @@ def generate_launch_description() -> LaunchDescription:
             start_spot_controller,
             clock_bridge,
             odometry_bridge,
+            scan_bridge,
+            odom_tf_bridge,
         ]
     )
+
