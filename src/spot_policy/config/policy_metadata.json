@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "task_id": "Mjlab-Velocity-Flat-Spot-V3",
-  "checkpoint": "/home/alaa-radhwan/Projects/spot_locomotion_v2/logs/rsl_rl/spot_velocity_v3/2026-09-07_15-57-38_v3_baseline_kp300_kd40_tl45_115/model_550.pt",
+  "task_id": "Mjlab-Velocity-Flat-Spot-V3-Robust",
+  "checkpoint": "logs/rsl_rl/spot_velocity_v3_robust/2026-09-10_15-11-04_spot_v3_robust_v1/model_600.pt",
   "policy_frequency_hz": 50.0,
   "physics_timestep_s": 0.002,
   "control_decimation": 10,
