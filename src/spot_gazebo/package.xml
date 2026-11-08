@@ -11,7 +11,7 @@
     Gazebo Harmonic simulation package for Spot.
   </description>
 
-  <maintainer email="alaa@example.com">
+  <maintainer email="alaa.radhwanmustafa@gmail.com">
     Alaa Radhwan
   </maintainer>
 
@@ -34,7 +34,6 @@
   <exec_depend>control_msgs</exec_depend>
 
   <exec_depend>rclpy</exec_depend>
-  <exec_depend>control_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
 

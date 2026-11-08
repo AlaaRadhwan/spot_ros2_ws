@@ -13,7 +13,7 @@ setup(
     install_requires=["setuptools"],
     zip_safe=True,
     maintainer="alaa-radhwan",
-    maintainer_email="todo@example.com",
+    maintainer_email="alaa.radhwanmustafa@gmail.com",
     description="Automated evaluation tools for the Spot V3 Gazebo deployment.",
     license="Apache-2.0",
     entry_points={

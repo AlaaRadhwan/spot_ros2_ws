@@ -3,7 +3,7 @@
   <name>spot_eval</name>
   <version>0.1.0</version>
   <description>Automated evaluation tools for the Spot V3 Gazebo deployment.</description>
-  <maintainer email="todo@example.com">alaa-radhwan</maintainer>
+  <maintainer email="alaa.radhwanmustafa@gmail.com">alaa-radhwan</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend>

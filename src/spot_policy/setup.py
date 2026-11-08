@@ -45,7 +45,7 @@ setup(
     ],
     zip_safe=True,
     maintainer="alaa-radhwan",
-    maintainer_email="todo@example.com",
+    maintainer_email="alaa.radhwanmustafa@gmail.com",
     description="ROS 2 deployment node for the Spot RL policy.",
     license="Apache-2.0",
     tests_require=["pytest"],

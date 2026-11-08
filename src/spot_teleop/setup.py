@@ -27,8 +27,8 @@ setup(
     zip_safe=True,
     maintainer='alaa-radhwan',
     maintainer_email='alaa.radhwanmustafa@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Keyboard and PS5 gamepad teleoperation publishing /cmd_vel for Spot.',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
