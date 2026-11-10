@@ -94,7 +94,7 @@ The commands come from the launch files and project reports. The warehouse world
 ## Documentation
 
 - Engineering reports: [`Findings/`](Findings)
-- Training, modeling and actuator investigation: [`spot_locomotion_v2`](https://github.com/AlaaRadhwan/spot_locomotion_v2) and its [sim-to-sim benchmark findings](https://github.com/AlaaRadhwan/spot_locomotion_v2/blob/feat/spot-v3-rl-env/FINDS/Spot_Locomotion_V3_Sim2Sim_Benchmark_Findings.md)
+- Training, modeling and actuator investigation: [`spot_locomotion_v2`](https://github.com/AlaaRadhwan/spot_locomotion_v2) and its [sim-to-sim benchmark findings](https://github.com/AlaaRadhwan/spot_locomotion_v2/blob/master/FINDS/Spot_Locomotion_V3_Sim2Sim_Benchmark_Findings.md)
 
 ## Built on
 
