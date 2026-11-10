@@ -8,11 +8,21 @@ This repository is the deployment and autonomy side. Robot modeling, actuator in
 > **Scope.** Everything here runs in simulation. Nothing has been deployed to physical Spot hardware.
 > The robot model is a custom rigid-body Spot model (31.6 kg), not Boston Dynamics' controller.
 
-<!-- DEMO MEDIA PLACEHOLDERS (not recorded yet; add real links only once the files exist)
-  - Gazebo: robust policy walking in the warehouse
-  - RViz: SLAM map building
-  - RViz: Nav2 goal navigation with AMCL
--->
+## Demo
+
+**Warehouse autonomous navigation — Gazebo + RViz**
+
+https://github.com/user-attachments/assets/4b25e34d-f044-4a09-b003-45ac95dbffc8
+
+Robust PPO locomotion policy (`model_600`) integrated with ROS 2, AMCL and Nav2. The robot successfully navigates to a goal at map coordinates (6.0, 3.0) m.
+
+**Learned locomotion in Gazebo (excerpt)**
+
+https://github.com/user-attachments/assets/244a5445-84db-4460-a973-04d8abaa3dce
+
+Scripted `/cmd_vel` commands within the policy's training range: backward walking, left and right arcs, then lateral strafing. This is a continuous 56 s excerpt trimmed from a longer recording; the playback speed was not modified.
+
+> **Recording notes.** Both videos play at 1× wall-clock speed. Gazebo itself ran at about 0.55–0.6× real time on the recording machine (median real-time factor 0.55 for the walking run and 0.60 for the navigation run, from the policy step counter), so motion looks slower than it would in real time. The RViz view is rotated about 90° relative to the saved map image. A SLAM mapping clip has not been recorded yet.
 
 ## Status
 
